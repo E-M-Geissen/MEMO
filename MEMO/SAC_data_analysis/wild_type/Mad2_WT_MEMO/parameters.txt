@@ -1,0 +1,39 @@
+Progress
+Posterior probability is zero at initial point.
+50.0 % - Elimination: e = 1, c = 1 -> rejected
+100.0 % - Elimination: e = 1, c = 2 -> accepted
+
+
+Type of mixture: log-normal
+ 
+ ----------------------------------------------------- 
+| Dataset |     component 1     |     component 2     |
+|---------|---------------------|---------------------|
+|         |  w   |  mu  | sigma |  w   |  mu  | sigma |
+|---------|---------------------|---------------------|
+| WT Mad2 | 0.99 | 6.93 |  0.44 | 0.01 | 5.78 |  0.01 |
+ ----------------------------------------------------- 
+
+Number of parameters: 9
+log-posterior: -9.4054e+02
+AIC: 1.8991e+03
+BIC: 1.9280e+03
+
+
+
+
+Type of mixture: log-normal
+ 
+ ------------------------------- 
+| Dataset |     component 1     |
+|---------|---------------------|
+|         |  w   |  mu  | sigma |
+|---------|---------------------|
+| WT Mad2 | 1.00 | 6.94 |  0.47 |
+ ------------------------------- 
+
+Number of parameters: 6
+log-posterior: -9.4366e+02
+AIC: 1.8993e+03
+BIC: 1.9186e+03
+Likelihood ration: Lambda = 4.4138e-02, p-value = 1.0046e-01

@@ -1,0 +1,38 @@
+>> printModel(S{1,1}.model, S{1,1}.parameters)
+
+
+Type of mixture: log-normal
+ 
+ -------------------------------------------------------- 
+| Dataset    |     component 1     |     component 2     |
+|------------|---------------------|---------------------|
+|            |  w   |  mu  | sigma |  w   |  mu  | sigma |
+|------------|---------------------|---------------------|
+| Delta Mad3 | 0.85 | 3.83 |  0.09 | 0.15 | 4.01 |  0.02 |
+ -------------------------------------------------------- 
+
+Number of parameters: 5
+log-posterior: -4.6367e+01
+AIC: 1.0273e+02
+BIC: 1.1006e+02
+
+
+
+>> printModel(M_red,parameters_red)
+
+
+Type of mixture: log-normal
+ 
+ ---------------------------------------------------- 
+| Dataset    |   component 1   |     component 2     |
+|------------|-----------------|---------------------|
+|            | w  | mu | sigma |  w   |  mu  | sigma |
+|------------|-----------------|---------------------|
+| Delta Mad3 |    |    |       | 1.00 | 3.86 |  0.11 |
+ ---------------------------------------------------- 
+
+Number of parameters: 2
+log-posterior: -4.6818e+01
+AIC: 9.7637e+01
+BIC: 1.0057e+02
+Likelihood ration: Lambda = 6.3702e-01, p-value = 8.2497e-01

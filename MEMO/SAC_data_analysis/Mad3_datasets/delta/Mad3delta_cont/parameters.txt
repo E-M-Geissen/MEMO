@@ -1,0 +1,38 @@
+Progress
+50.0 % - Elimination: e = 1, c = 1 -> rejected
+100.0 % - Elimination: e = 1, c = 2 -> rejected
+
+
+Type of mixture: log-normal
+ 
+ -------------------------------------------------------- 
+| Dataset    |     component 1     |     component 2     |
+|------------|---------------------|---------------------|
+|            |  w   |  mu  | sigma |  w   |  mu  | sigma |
+|------------|---------------------|---------------------|
+| Delta Mad3 | 0.68 | 3.91 |  0.13 | 0.32 | 3.91 |  0.01 |
+ -------------------------------------------------------- 
+
+Number of parameters: 5
+log-posterior: -8.8407e+01
+AIC: 1.8681e+02
+BIC: 1.9414e+02
+
+
+
+
+Type of mixture: log-normal
+ 
+ ---------------------------------- 
+| Dataset    |     component 1     |
+|------------|---------------------|
+|            |  w   |  mu  | sigma |
+|------------|---------------------|
+| Delta Mad3 | 1.00 | 3.91 |  0.10 |
+ ---------------------------------- 
+
+Number of parameters: 2
+log-posterior: -9.8337e+01
+AIC: 2.0067e+02
+BIC: 2.0360e+02
+Likelihood ration: Lambda = 4.8706e-05, p-value = 1.8152e-04
