@@ -18,7 +18,7 @@ needed to reproduce the analysis shown in the manuscript and supplement of:
 
 
 
-
+Use install_toolboxes.m to add the needed folders to your matlab path.
 
              
 Requirements / System:

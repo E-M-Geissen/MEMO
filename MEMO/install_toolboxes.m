@@ -7,7 +7,7 @@ addpath(genpath([current_path,filesep,'basic_examples',filesep,'project']));
 
 % for mcmc sampling the matlab toolbox DRAM (Haario2006) has to be in the
 % matlab path
- addpath(genpath('D:\modelling\matlab\Toolboxen\mcmcstat'));
+ % addpath(genpath('D:\modelling\matlab\Toolboxen\mcmcstat'));
 
 
 % General properties
