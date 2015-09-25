@@ -33,15 +33,15 @@ M.label.y = 'probability density';
 
 % EXPERIMENT
 i = 1;
-% exp_cond_1; % experimental condition without subpopulations 
-% 
-% D{i}.name = tit;
-% D{i}.description = [];
-% D{i}.data.uncensored = Tm;
-% D{i}.data.censored = Tc;
-% D{i}.observation_interval = 5;
+data_exp_cond_1; % experimental condition without subpopulations 
 
-M.experiment(i).name  = 'condition 1';
+D{i}.name = tit;
+D{i}.description = [];
+D{i}.data.uncensored = Tm;
+D{i}.data.censored = Tc;
+D{i}.observation_interval = 5;
+
+M.experiment(i).name  = tit;
 M.experiment(i).size   = 2;
 M.experiment(i).w      = {w_exp1, 1-w_exp1};
 M.experiment(i).mu     = {mu_1_exp1, mu_2_exp1};
@@ -51,15 +51,15 @@ M.experiment(i).sigma  = {exp(log_sigma_1_exp1),exp(log_sigma_2_exp1)};
 
 % % EXPERIMENT
  i = i + 1;
-% exp_cond_2; % experimental condition with 2 subpopulations 
-% 
-% D{i}.name = tit;
-% D{i}.description = [];
-% D{i}.data.uncensored = Tm;
-% D{i}.data.censored = Tc;
-% D{i}.observation_interval = 5;
+data_exp_cond_2; % experimental condition with 2 subpopulations 
 
-M.experiment(i).name   = 'condition 2';
+D{i}.name = tit;
+D{i}.description = [];
+D{i}.data.uncensored = Tm;
+D{i}.data.censored = Tc;
+D{i}.observation_interval = 5;
+
+M.experiment(i).name   = tit;
 M.experiment(i).size   = 2;
 M.experiment(i).w      = {w_exp2, 1-w_exp2};
 M.experiment(i).mu     = {mu_1_exp2, mu_2_exp2};
@@ -69,15 +69,15 @@ M.experiment(i).sigma  = {exp(log_sigma_1_exp2),exp(log_sigma_2_exp2)};
 
 % EXPERIMENT
 i = i + 1;
-% exp_cond_3; % experimental condition with 3 subpopulations 
-% 
-% D{i}.name = tit;
-% D{i}.description = [];
-% D{i}.data.uncensored = Tm;
-% D{i}.data.censored = Tc;
-% D{i}.observation_interval = 5;
+data_exp_cond_3; % experimental condition with 3 subpopulations 
 
-M.experiment(i).name  = 'condition 3';
+D{i}.name = tit;
+D{i}.description = [];
+D{i}.data.uncensored = Tm;
+D{i}.data.censored = Tc;
+D{i}.observation_interval = 5;
+
+M.experiment(i).name  = tit;
 M.experiment(i).size   = 2;
 M.experiment(i).w      = {w_exp3, 1-w_exp3};
 M.experiment(i).mu     = {mu_1_exp3, mu_2_exp3};
