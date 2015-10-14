@@ -1,15 +1,15 @@
-% eval_performance calcualtes the AIC, BIC and Likelihood ratio from
+% eval_performance calcualtes the AIC and BIC for a 
 % maximum posterior estimate
 %
 % USAGE:
 % ======
 % 
-% eval_model_perf(D,parameters)
+% eval_performance(D,parameters)
 %
 % INPUTS:
 % =======
 %  D ... data structure
-% parameters ... struct containg information about parameters, at least:
+%  parameters ... struct containg information about parameters, at least:
 %   .number number of parameters
 %   .MS.MAP.logPost ... log-posterior at the maximum a posterior estimate
 %

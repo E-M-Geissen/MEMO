@@ -102,6 +102,7 @@
 %  minimization problems are considered.)
 %
 % 2012/05/16 Jan Hasenauer
+% modified Eva-Maria Geissen
 
 % function [logL,grad] = logLikelihoodMM(theta,M,D,options)
 function [varargout] = logLikelihoodMM(varargin)

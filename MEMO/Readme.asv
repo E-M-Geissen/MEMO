@@ -19,7 +19,7 @@ needed to reproduce the analysis shown in the manuscript and supplement of:
 
 
 
-Run install_toolboxes.m to add the required folders to your matlab path.
+Run install_toolboxes.m to add the needed folders to your matlab path.
 
              
 Requirements / System:

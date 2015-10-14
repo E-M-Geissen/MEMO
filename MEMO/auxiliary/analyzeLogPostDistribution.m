@@ -21,6 +21,7 @@
 %   .plot ... plot the results during the computation (default = 'true').
 %   .fh ... figure handle. If no figure handle is provided, a new figure
 %           is created.
+%   .reoptimize ... deteremines whether the likelihood is optimized given the generated data (default = 'true').
 %
 % Outputs:
 % ========

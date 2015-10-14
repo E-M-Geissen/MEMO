@@ -29,7 +29,7 @@ function fh = plotMS(varargin)
 if nargin >= 1
     parameters = varargin{1};
 else
-    error('plotPL requires a parameter object as input.');
+    error('plotMS requires a parameter object as input.');
 end
 
 % Open figure
