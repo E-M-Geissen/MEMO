@@ -31,7 +31,7 @@
 %       .Fce ... conditional cumulative probability of censoring
 %
 % 2012/07/02 Jan Hasenauer
-
+% modified Eva-Maria Geissen
 % function Dens = getMixtureDensity(x,theta,M,Mc,options)
 function Dens = getMixtureDensity(varargin)
 

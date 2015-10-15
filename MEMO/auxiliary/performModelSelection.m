@@ -45,11 +45,12 @@
 % M_opt ... optimal model according to the selcted model criterion.
 % Mc_opt ... optimal censoring model, given M_opt, according to the selcted model criterion.
 % parameters_opt ... parameters of the optimal model.
-% S ... set of all analyzed models and the corresponding parameters.
+% S ... set of all analyzed models and the corresponding parameters, sorted according to specified criterion.
 % R ... component deletion considered.
 %
 % 2012/06/15 Jan Hasenauer
-
+% modified Eva-Maria Geissen
+%
 % function [M_opt,parameters_opt,S,R] = performModelSelection(parameters,M,D)
 function [M_opt,Mc_opt,parameters_opt,S,R] = performModelSelection(varargin)
 

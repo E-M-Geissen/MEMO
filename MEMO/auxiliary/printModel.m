@@ -64,7 +64,7 @@
 %   .MS.MAP.logPost ... log-posterior at the maximum a posterior estimate
 %
 % 2012/05/17 Jan Hasenauer
-
+% modified Eva-Maria Geissen
 function printModel(varargin)
 
 %% CHECK AND ASSIGN INPUTS
