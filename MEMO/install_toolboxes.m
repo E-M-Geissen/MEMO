@@ -1,5 +1,5 @@
 current_path= pwd;
-addpath(genpath([current_path, filesep, 'auxiliary']));
+addpath(genpath([current_path, filesep, 'auxiliary'])); % adds also PESTO to your matlab path
 addpath(genpath([current_path,filesep,'SAC_data_analysis',filesep,'project']));
 addpath(genpath([current_path,filesep,'NGF-Erk_data_analysis',filesep,'project']));
 addpath(genpath([current_path,filesep,'basic_examples',filesep,'project']));
