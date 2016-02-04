@@ -7,7 +7,7 @@
 %  observation interval for model = 0 min
  
 %% SPECIFY MODEL PARAMETERS 
-syms mu_M2_0_1 esigma_M2_0_1 mu_M2_0_2 esigma_M2_0_2 w_M2_0 ;
+syms mu_M2_0_1 log_M2_0_1 mu_M2_0_2 log_M2_0_2 w_M2_0 ;
 
 parameters.sym  = [ mu_M2_0_1 ; log_M2_0_1 ;mu_M2_0_2 ; log_M2_0_2 ; w_M2_0];
 

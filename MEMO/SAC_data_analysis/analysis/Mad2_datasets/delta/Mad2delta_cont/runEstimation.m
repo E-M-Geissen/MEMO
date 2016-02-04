@@ -17,7 +17,7 @@ D = processData(D);
 %% OPTIMIZATION
 % Options
 options_fit.n_starts = 1000;
-options_fit.plot = plot_opt;
+%options_fit.plot = plot_opt;
 options_fit.proposal = 'latin hypercube';
 options_fit.fmincon = optimset('algorithm','interior-point',...%'active-set',...
                            'display','off',...

@@ -302,7 +302,7 @@ set(0,TextSizes);
 
 
 %%
-% Legend constcurtion
+% Legend construction
 for o = 1:o_max
     if o == 1
         ls{o} = [num2str(o,'%d') ' component'];

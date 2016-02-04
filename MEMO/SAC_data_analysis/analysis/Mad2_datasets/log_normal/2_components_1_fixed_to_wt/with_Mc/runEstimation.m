@@ -3,7 +3,7 @@ clear all;
 close all;
 
 %% OPTIONS
-plot_opt = 'false'; % plots are not shown
+plot_opt =  'false'; % plots are not shown
 options.compute_P = 'true'; % computation of profiles
 
 %% Model
@@ -26,8 +26,9 @@ options_fit.fmincon = optimset('algorithm','interior-point',...%'active-set',...
                            'MaxIter',4000,...
                            'MaxFunEvals',4000*parameters.number);
 % Run estimation
+tic
 [parameters,M.fh.fit] = optimizeMultiStart(parameters,@(theta,opt) logLikelihoodMMc(theta,M,Mc,D,opt),options_fit);
-
+toc
 % calculate information criterions for MLE
 parameters= eval_performance(D,parameters);
 
