@@ -27,6 +27,8 @@ needed to reproduce the analysis shown in the manuscript and supplement of:
 
 - ./illustrating _examples_censoring: analysis of simulated data with regard to the effects of censoring as shown in manuscript Figure 1 + 2
 
+_./RNA_seq_data_Buettner2015: analysis of 4 selected datasets from the paper: Buettner et. a. Computational analysis of cell-to-cell heterogeneity in single-cell rna-sequencing data reveals hidden subpopulations of cells.
+
 
 Files: 
 install_toolboxes.m: Run to add the required folders to your matlab path.

@@ -78,9 +78,13 @@
 % D{i} ... information about i-th experiment
 %     .name ... name of experiment
 %     .data ... data
-%         .uncensored ... column vector containing uncencored data
-% 	      .censored ... column vector containing cencored data
-%     .observation_interval ... inter-observation time
+%         .uncensored ... column vector containing uncensored or interval censored  data
+% 	      .censored ... column vector containing left ore right censored data
+%         .cen_type ... type of censoring for data in .censored 'left' or
+%                   ... 'right', if not specified default is right 
+%     .observation_interval ... inter-observation
+
+
 % options ...
 %     .scale ... option determining whether positive or negative values
 %         are returned (see below). The default is s = 0.
@@ -102,7 +106,7 @@
 %  minimization problems are considered.)
 %
 % 2012/05/16 Jan Hasenauer
-% modified Eva-Maria Geissen
+% modified Eva-Maria Geissen 14.12.2015
 
 % function [logL,grad] = logLikelihoodMM(theta,M,D,options)
 function [varargout] = logLikelihoodMM(varargin)
@@ -139,16 +143,32 @@ for j = 1:length(D)
     
     %% RESTORE DATA
     x  = D{j}.data.uncensored(:);
-    xc = D{j}.data.censored(:);
+    
+    if  isfield(D{j},'data.cen_type')
+        switch D{j}.data.cen_type
+            case 'right'
+                xc = D{j}.data.censored(:);
+                xl = [];
+            case 'left'
+                xc = [];
+                xl = D{j}.data.censored(:);
+        end
+    else
+        xc = D{j}.data.censored(:);
+        xl = [];
+    end
+    
     dx = D{j}.observation_interval;
     
     Px  = zeros(length(x),1);
     Pxc = zeros(length(xc),1);
+    Pxl = zeros(length(xl),1);
     
     % Scaling
     if isfield(M.experiment(j),'scaling_fun')
         x  = M.experiment(j).scaling_fun(theta)*x;
         xc = M.experiment(j).scaling_fun(theta)*xc;
+        xl = M.experiment(j).scaling_fun(theta)*xl;
         dx = M.experiment(j).scaling_fun(theta)*dx;
     end
     
@@ -168,6 +188,7 @@ for j = 1:length(D)
                     yk_ = ((x-dx)-mk)/sk;
                 end
                 ykc = (xc-mk)/sk;
+                ykl = (xl-mk)/sk;
                 
             case 'log-normal'
                 
@@ -180,6 +201,7 @@ for j = 1:length(D)
                     yk_ = (log(x-dx)-mk)/sk;
                 end
                 ykc = (log(xc)-mk)/sk;
+                ykl = (log(xl)-mk)/sk;
                 
             case 'Johnson SU'
                 
@@ -196,6 +218,7 @@ for j = 1:length(D)
                     yk_ = gk + sk*asinh((x-dx-xk)/lk);
                 end
                 ykc = gk + sk*asinh((xc-xk)/lk);
+                ykl = gk + sk*asinh((xl-xk)/lk);
                 
             case 'gamma'
                 
@@ -235,9 +258,14 @@ for j = 1:length(D)
                     end
                 end
                 
-                % Censored data
+                % right censored data
                 if length(xc) >= 1
                     Pxc = Pxc + wk*(1 - 0.5*erfc(-ykc./sqrt(2)));
+                end
+                
+                % left censored data
+                if length(xl) >= 1
+                    Pxl = Pxl + wk*0.5*erfc(-ykl./sqrt(2));
                 end
                 
             case 'log-normal'
@@ -251,9 +279,14 @@ for j = 1:length(D)
                     end
                 end
                 
-                % Censored data
+                % right censored data
                 if length(xc) >= 1
                     Pxc = Pxc + wk*(1 - 0.5*erfc(-ykc./sqrt(2)));
+                end
+                
+                % left censored data
+                if length(xl) >= 1
+                    Pxl = Pxl + wk*0.5*erfc(-ykl./sqrt(2));
                 end
                 
             case 'Johnson SU'
@@ -267,9 +300,14 @@ for j = 1:length(D)
                     end
                 end
                 
-                % Censored data
+                % right censored data
                 if length(xc) >= 1
                     Pxc = Pxc + wk*(1 - 0.5*erfc(-ykc./sqrt(2)));
+                end
+                
+                % left censored data
+                if length(xl) >= 1
+                    Pxl = Pxl + wk*0.5*erfc(-ykl./sqrt(2));
                 end
                 
             case 'gamma'
@@ -282,9 +320,13 @@ for j = 1:length(D)
                     end
                 end
                 
-                % Censored data
+                % right censored data
                 if length(xc) >= 1
                     Pxc = Pxc + wk*(1 - gamcdf(xc,ak,1/bk));
+                end
+                % left censored data
+                if length(xl) >= 1
+                    Pxl = Pxl + wk*gamcdf(xl,ak,1/bk);
                 end
         end
     end
@@ -295,6 +337,10 @@ for j = 1:length(D)
     end
     if length(xc) >= 1
         logL = logL + sum(log(Pxc));
+    end
+    
+    if length(xl) >= 1
+        logL = logL + sum(log(Pxl));
     end
     
     %% GRADIENT CALCULATION
@@ -343,6 +389,12 @@ for j = 1:length(D)
                         grad = grad + sum(S,2);
                     end
                     
+                    if length(xl) >= 1
+                        S = + dwkdt*( 0.5*erfc(-ykl ./Pxl')) ...
+                            + wk/sk*(-bsxfun(@times,bsxfun(@plus,dskdt*ykl ,dmkdt),1/sqrt(2*pi)*exp(-0.5*ykl .^2)./Pxl'));
+                        grad = grad + sum(S,2);
+                    end
+                    
                 case 'log-normal'
                     
                     %% ASSIGN PARAMETERS AND AUXILIARY VARIABLES
@@ -380,6 +432,12 @@ for j = 1:length(D)
                     if length(xc) >= 1
                         S = - dwkdt*(0.5*erfc(-ykc./sqrt(2))./Pxc') ...
                             + wk/sk*bsxfun(@times,bsxfun(@plus,dskdt*ykc,dmkdt),1/sqrt(2*pi)*exp(-0.5*ykc.^2)./Pxc');
+                        grad = grad + sum(S,2);
+                    end
+                    
+                    if length(xl) >= 1
+                        S =  dwkdt*(0.5*erfc(-ykl./sqrt(2))./Pxl') ...
+                            - wk/sk*bsxfun(@times,bsxfun(@plus,dskdt*ykl,dmkdt),1/sqrt(2*pi)*exp(-0.5*ykl.^2)./Pxl');
                         grad = grad + sum(S,2);
                     end
                     
@@ -458,6 +516,17 @@ for j = 1:length(D)
                         grad = grad + sum(S,2);
                     end
                     
+                    if length(xl) >= 1
+                        S =  dwkdt*(0.5*erfc(-ykl./sqrt(2))./Pxl') ...
+                            + wk*bsxfun(@times,...
+                            bsxfun(@plus,...
+                            - dlkdt*(sk*zkl./(lk*sqrt(1+zkl.^2))) ...
+                            - dxkdt*(sk    ./(lk*sqrt(1+zkl.^2))) ...
+                            + dskdt*asinh(zkl), ...
+                            dgkdt),...
+                            1/sqrt(2*pi)*exp(-0.5*ykl.^2)./Pxl');
+                        grad = grad + sum(S,2);
+                    end
                 case 'gamma'
                     %% ASSIGN PARAMETERS AND AUXILIARY VARIABLES
                     wk    = M.experiment(j).w_fun{k}(theta);
@@ -497,6 +566,13 @@ for j = 1:length(D)
                         S= - (dwkdt*(gamcdf(xc,ak,1/bk)'./(Pxc)') ...
                             + wk*((dakdt*(((-(gamma(ak))^2*(bk*xc).^ak.*(hypergeom([ak,ak],[ak+1, ak+1],-bk*xc)/gamma(ak+1)^2)+gamma(ak)*gammainc(bk*xc,ak+zeros(length(xc),1)).*log(bk*xc))./gamma(ak)-gamcdf(xc,ak,1/bk)*psi(ak))'./Pxc'))...
                             +dbkdt*(((1/gamma(ak)*(bk*xc).^(ak-1).*exp(-bk*xc).*xc))'./(Pxc)')));
+                        grad = grad + sum(S,2);
+                    end
+                    
+                    if length(xl) >= 1
+                        S=  dwkdt*(gamcdf(xl,ak,1/bk)'./(Pxl)') ...
+                            + wk*((dakdt*(((-(gamma(ak))^2*(bk*xl).^ak.*(hypergeom([ak,ak],[ak+1, ak+1],-bk*xl)/gamma(ak+1)^2)+gamma(ak)*gammainc(bk*xl,ak+zeros(length(xl),1)).*log(bk*xl))./gamma(ak)-gamcdf(xl,ak,1/bk)*psi(ak))'./Pxl'))...
+                            +dbkdt*(((1/gamma(ak)*(bk*xc).^(ak-1).*exp(-bk*xc).*xc))'./(Pxc)'));
                         grad = grad + sum(S,2);
                     end
             end

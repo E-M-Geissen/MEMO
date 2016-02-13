@@ -74,9 +74,9 @@
 %                 and beta_k with respect to theta as function of theta.
 %                  of theta.
 % Mc ... model for censoring distribution (same structure as M).
-%   the same distributions types as for M are supported. 
+%   the same distributions types as for M are supported.
 %   Additionally a single delta distribution is supported.
-%           wk=1;          
+%           wk=1;
 %           Mc.experiment(j).location;
 %
 % D{i} ... information about i-th experiment
@@ -84,6 +84,8 @@
 %     .data ... data
 %         .uncensored ... column vector containing uncencored data
 % 	      .censored ... column vector containing cencored data
+%         .cen_type ... type of censoring for data in .censored 'left' or
+%                   ... 'right', if not specified default is right
 %     .observation_interval ... inter-observation time
 % options ...
 %     .scale ... option determining whether positive or negative values
@@ -104,6 +106,8 @@
 %  minimization problems are considered.)
 %
 % 2012/07/04 Jan Hasenauer
+% modified Eva-Maria Geissen 13.02.2016
+
 
 % function [logL,grad] = logLikelihoodMMc(theta,M,Mc,D,options)
 function [varargout] = logLikelihoodMMc(varargin)
@@ -542,11 +546,11 @@ if D{1}.observation_interval > 0
                         Fk  =   gamcdf(xi,ak,1/bk);
                         Fkr =   gamcdf(xir,ak,1/bk);
                         
-                    if nargout >= 2 % Gradient computed
-                        dwkfkdt = dwkdt*fk + wk*((dakdt*(fk.*(log(bk)+log(xi)-psi(ak)))+dbkdt*(fk.*(ak/bk-xi))));
-                        dwkFkdt = dwkdt*Fk +wk*(dakdt*(1/gamma(ak)*(-(gamma(ak))^2*(bk*xi).^ak.*(hypergeom([ak,ak],[ak+1, ak+1],-bk*xi)/gamma(ak+1)^2)+gamma(ak)*gammainc(bk*xi,ak+zeros(length(xi),1)').*log(bk*xi))...
-                            -Fk*psi(ak))+dbkdt*(1/gamma(ak)*(bk*xi).^(ak-1).*exp(-bk*xi).*xi));
-                    end
+                        if nargout >= 2 % Gradient computed
+                            dwkfkdt = dwkdt*fk + wk*((dakdt*(fk.*(log(bk)+log(xi)-psi(ak)))+dbkdt*(fk.*(ak/bk-xi))));
+                            dwkFkdt = dwkdt*Fk +wk*(dakdt*(1/gamma(ak)*(-(gamma(ak))^2*(bk*xi).^ak.*(hypergeom([ak,ak],[ak+1, ak+1],-bk*xi)/gamma(ak+1)^2)+gamma(ak)*gammainc(bk*xi,ak+zeros(length(xi),1)').*log(bk*xi))...
+                                -Fk*psi(ak))+dbkdt*(1/gamma(ak)*(bk*xi).^(ak-1).*exp(-bk*xi).*xi));
+                        end
                         
                     case 'delta'
                         
@@ -591,11 +595,31 @@ if D{1}.observation_interval > 0
             end
         end
         %% LIKELIHOOD
-        % Event distribution
-        fA  = f .*(1-Fc);
-        fB  = fc.*(1-F );
-        fAr  = fr .*(1-Fcr);
-        fBr  = fcr.*(1-Fr );
+        
+        if  isfield(D{j},'data.cen_type')
+            switch D{j}.data.cen_type
+                case 'right'
+                    % Event distribution
+                    fA  = f .*(1-Fc);
+                    fB  = fc.*(1-F );
+                    fAr  = fr .*(1-Fcr);
+                    fBr  = fcr.*(1-Fr );
+                case 'left'
+                    % Event distribution
+                    fA  = f .*(Fc);
+                    fB  = fc.*(F );
+                    fAr  = fr .*(Fcr);
+                    fBr  = fcr.*(Fr );
+            end
+        else
+            % Event distribution
+            fA  = f .*(1-Fc);
+            fB  = fc.*(1-F );
+            fAr  = fr .*(1-Fcr);
+            fBr  = fcr.*(1-Fr );
+        end
+        
+        
         
         %if dx > 0
         % Cumulative event probability
@@ -690,9 +714,26 @@ if D{1}.observation_interval > 0
         
         %% GRADIENT
         if nargout >= 2 % Gradient computed
-            % Event distribution
-            dfAdt = [zeros(n_grad_theta,1),bsxfun(@times,dfdt(:,2:end),(1-Fc(2:end))) - bsxfun(@times,f(2:end),dFcdt(:,2:end))];
-            dfBdt = [zeros(n_grad_theta,1),bsxfun(@times,dfcdt(:,2:end),(1-F(2:end))) - bsxfun(@times,fc(2:end),dFdt(:,2:end))];
+            
+            
+            if  isfield(D{j},'data.cen_type')
+                switch D{j}.data.cen_type
+                    case 'right'
+                        % Event distribution
+                        dfAdt = [zeros(n_grad_theta,1),bsxfun(@times,dfdt(:,2:end),(1-Fc(2:end))) - bsxfun(@times,f(2:end),dFcdt(:,2:end))];
+                        dfBdt = [zeros(n_grad_theta,1),bsxfun(@times,dfcdt(:,2:end),(1-F(2:end))) - bsxfun(@times,fc(2:end),dFdt(:,2:end))];
+                    case 'left'
+                        % Event distribution
+                        dfAdt = [zeros(n_grad_theta,1),bsxfun(@times,dfdt(:,2:end),(Fc(2:end))) + bsxfun(@times,f(2:end),dFcdt(:,2:end))];
+                        dfBdt = [zeros(n_grad_theta,1),bsxfun(@times,dfcdt(:,2:end),(F(2:end))) + bsxfun(@times,fc(2:end),dFdt(:,2:end))];
+                end
+            else
+                % Event distribution
+                dfAdt = [zeros(n_grad_theta,1),bsxfun(@times,dfdt(:,2:end),(1-Fc(2:end))) - bsxfun(@times,f(2:end),dFcdt(:,2:end))];
+                dfBdt = [zeros(n_grad_theta,1),bsxfun(@times,dfcdt(:,2:end),(1-F(2:end))) - bsxfun(@times,fc(2:end),dFdt(:,2:end))];
+            end
+            
+            
             % Cumulative event probability
             switch options.quadrature_type
                 case 'trapeziodal'
@@ -1056,11 +1097,11 @@ else
                         fk  =   gampdf(xi,ak,1/bk);
                         Fk  =   gamcdf(xi,ak,1/bk);
                         
-                    if nargout >= 2 % Gradient computed
-                        dwkfkdt = dwkdt*fk + wk*((dakdt*(fk.*(log(bk)+log(xi)-psi(ak)))+dbkdt*(fk.*(ak/bk-xi))));
-                        dwkFkdt = dwkdt*Fk +wk*(dakdt*(1/gamma(ak)*(-(gamma(ak))^2*(bk*xi).^ak.*(hypergeom([ak,ak],[ak+1, ak+1],-bk*xi)/gamma(ak+1)^2)+gamma(ak)*gammainc(bk*xi,ak+zeros(length(xi),1)').*log(bk*xi))...
-                            -Fk*psi(ak))+dbkdt*(1/gamma(ak)*(bk*xi).^(ak-1).*exp(-bk*xi).*xi));
-                    end
+                        if nargout >= 2 % Gradient computed
+                            dwkfkdt = dwkdt*fk + wk*((dakdt*(fk.*(log(bk)+log(xi)-psi(ak)))+dbkdt*(fk.*(ak/bk-xi))));
+                            dwkFkdt = dwkdt*Fk +wk*(dakdt*(1/gamma(ak)*(-(gamma(ak))^2*(bk*xi).^ak.*(hypergeom([ak,ak],[ak+1, ak+1],-bk*xi)/gamma(ak+1)^2)+gamma(ak)*gammainc(bk*xi,ak+zeros(length(xi),1)').*log(bk*xi))...
+                                -Fk*psi(ak))+dbkdt*(1/gamma(ak)*(bk*xi).^(ak-1).*exp(-bk*xi).*xi));
+                        end
                         
                     case 'delta'
                         
@@ -1105,12 +1146,31 @@ else
             end
         end
         %% LIKELIHOOD
-        % Event distribution
-        fA  = f .*(1-Fc);
-        fB  = fc.*(1-F );
-        
-        Px   = fA(ind );
-        Pxc  = fB(indc);
+        if  isfield(D{j},'data.cen_type')
+            switch D{j}.data.cen_type
+                case 'right'
+                    % Event distribution
+                    fA  = f .*(1-Fc);
+                    fB  = fc.*(1-F );
+                    
+                    Px   = fA(ind );
+                    Pxc  = fB(indc);
+                case 'left'
+                    % Event distribution
+                    fA  = f .*(Fc);
+                    fB  = fc.*(F);
+                    
+                    Px   = fA(ind );
+                    Pxc  = fB(indc);
+            end
+        else
+            % Event distribution
+            fA  = f .*(1-Fc);
+            fB  = fc.*(1-F );
+            
+            Px   = fA(ind );
+            Pxc  = fB(indc);
+        end
         
         
         % Likelihood
@@ -1153,9 +1213,24 @@ else
         %% GRADIENT
         
         if nargout >= 2 % Gradient computed
-            % Event distribution
-            dfAdt = [bsxfun(@times,dfdt(:,1:end),(1-Fc(1:end))) - bsxfun(@times,f(1:end),dFcdt(:,1:end))];
-            dfBdt = [bsxfun(@times,dfcdt(:,1:end),(1-F(1:end))) - bsxfun(@times,fc(1:end),dFdt(:,1:end))];
+            
+            if  isfield(D{j},'data.cen_type')
+                switch D{j}.data.cen_type
+                    case 'right'
+                        % Event distribution
+                        dfAdt = [bsxfun(@times,dfdt(:,1:end),(1-Fc(1:end))) - bsxfun(@times,f(1:end),dFcdt(:,1:end))];
+                        dfBdt = [bsxfun(@times,dfcdt(:,1:end),(1-F(1:end))) - bsxfun(@times,fc(1:end),dFdt(:,1:end))];
+                    case 'left'
+                        % Event distribution
+                        dfAdt = [bsxfun(@times,dfdt(:,1:end),(Fc(1:end))) + bsxfun(@times,f(1:end),dFcdt(:,1:end))];
+                        dfBdt = [bsxfun(@times,dfcdt(:,1:end),(F(1:end))) + bsxfun(@times,fc(1:end),dFdt(:,1:end))];
+                end
+            else
+                % Event distribution
+                dfAdt = [bsxfun(@times,dfdt(:,1:end),(1-Fc(1:end))) - bsxfun(@times,f(1:end),dFcdt(:,1:end))];
+                dfBdt = [bsxfun(@times,dfcdt(:,1:end),(1-F(1:end))) - bsxfun(@times,fc(1:end),dFdt(:,1:end))];
+            end
+            
             
             dFAdt  = dfAdt;
             dFBdt  = dfBdt;

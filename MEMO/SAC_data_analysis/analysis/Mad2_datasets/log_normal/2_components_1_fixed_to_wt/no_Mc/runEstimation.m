@@ -53,7 +53,7 @@ printModel(M,parameters);
 printModel(M_red,parameters_red)
 
 %if strcmp(plot_opt,'true')
-    [M_red.fh.model_data] = plotMixtureModel3(parameters_red,M_red,Mc_red,D);
+    [M_red.fh.model_data] = plotMixtureModel(parameters_red,M_red,Mc_red,D);
 %end
 
 

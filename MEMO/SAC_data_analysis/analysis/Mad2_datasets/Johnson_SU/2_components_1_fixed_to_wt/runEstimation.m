@@ -27,6 +27,10 @@ options_fit.fmincon = optimset('algorithm','interior-point',...%'active-set',...
                            'MaxFunEvals',4000*parameters.number);
 % Run estimation
 [parameters,M.fh.fit] = optimizeMultiStart(parameters,@(theta,opt) logLikelihoodMMc(theta,M,Mc,D,opt),options_fit);
+
+% calculate information criterions for MLE
+parameters= eval_performance(D,parameters);
+
 % Print result of estimation
 printModel(M,parameters);
 printModel(Mc,parameters);
@@ -43,10 +47,10 @@ options_modsel.criterion = 'BIC';
 options_modsel.optim_opt.fmincon = optimset(options_fit.fmincon,'algorithm','active-set');
 % Run model selection
 [M_red,Mc_red,parameters_red,S,R] = performModelSelection(parameters,M,Mc,D,options_modsel);
-% Print and plot optimal model
-printModel(S{1,1}.model, S{1,1}.parameters)
-printModel(M_red,parameters_red)
 
+% Print full model an best reduced model
+printModel(M,parameters);
+printModel(M_red,parameters_red)
 
 save('model_sel','M_red','Mc_red','parameters_red','S','R','-v7.3');
 

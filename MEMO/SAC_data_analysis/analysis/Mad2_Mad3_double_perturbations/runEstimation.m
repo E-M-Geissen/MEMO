@@ -33,7 +33,7 @@ D = processData(D);
 %% OPTIMIZATION
 % Options
 options_fit.n_starts = 200;
-options_fit.plot = plot_opt;
+%options_fit.plot = plot_opt;
 options_fit.proposal = 'latin hypercube';
 options_fit.fmincon = optimset('algorithm','interior-point',...%'active-set',...
     'display','off',...
@@ -42,6 +42,11 @@ options_fit.fmincon = optimset('algorithm','interior-point',...%'active-set',...
     'MaxFunEvals',4000*parameters.number);
 % Run estimation
 [parameters,M.fh.fit] = optimizeMultiStart(parameters,@(theta,opt) logLikelihoodMMc(theta,M,Mc,D,opt),options_fit);
+
+% calculate information criterions for MLE
+parameters= eval_performance(D,parameters);
+
+
 % Print result of estimation
 printModel(M,parameters);
 printModel(Mc,parameters);
@@ -60,8 +65,7 @@ options_MCMC.nsimu_run    =1e5;
 [parameters,M.fh.MCMC.logL_trace,M.fh.MCMC.par_trace,M.fh.MCMC.par_dis] = ...
     computeMCMCsample_DRAM(parameters,@(theta) logLikelihoodMMc(theta,M,Mc,D),options_MCMC);
 
-% calculate information criterions for MLE
-parameters= eval_performance(D,parameters);
+
 
 % save results
 save('mcmc_full','parameters','-v7.3');

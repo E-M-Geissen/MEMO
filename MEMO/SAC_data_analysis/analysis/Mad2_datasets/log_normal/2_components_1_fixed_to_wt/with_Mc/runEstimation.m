@@ -26,15 +26,16 @@ options_fit.fmincon = optimset('algorithm','interior-point',...%'active-set',...
                            'MaxIter',4000,...
                            'MaxFunEvals',4000*parameters.number);
 % Run estimation
-tic
 [parameters,M.fh.fit] = optimizeMultiStart(parameters,@(theta,opt) logLikelihoodMMc(theta,M,Mc,D,opt),options_fit);
-toc
+
 % calculate information criterions for MLE
 parameters= eval_performance(D,parameters);
 
 % Print result of estimation
 printModel(M,parameters);
 printModel(Mc,parameters);
+
+[M.fh.model_data] = plotMixtureModel(parameters,M,Mc,D);
 
 % save
 save('optimization','parameters','M','Mc','D','-v7.3');
@@ -55,9 +56,9 @@ save('model_sel','M_red','Mc_red','parameters_red','S','R','-v7.3');
 
 % Print and plot optimal model
 printModel(M,parameters);
-printModel(M_red,parameters_red);
+printModel(Mc_red,parameters_red);
 
-
+[M_red.fh.model_data] = plotMixtureModel(parameters_red,M_red,Mc_red,D);
 
 %% ANALYZE DISTRIBUTION OF LOG-LIKELIHOODS (REDUCED MODEL)
 % Options
